@@ -22,7 +22,6 @@ function cmake_init {
 	add_subdirectory(lib)
 	add_subdirectory(src)
 	add_subdirectory(test)
-	add_subdirectory(include)
 	enable_testing()
 EOF
 

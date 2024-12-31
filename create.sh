@@ -55,6 +55,24 @@ cat > $ProjectName/src/main.cpp<<EOF
 	}
 EOF
 }
+function renew_lib {
+	touch $ProjectName/lib/renew.sh
+	cat > $ProjectName/lib/renew.sh<<EOFN
+file=\$(find . -name '*.cpp' -print)
+for item in \$file
+do
+	name=\$(echo \$item|sed 's/.\///g'|sed 's/.cpp//g')
+	cat>CMakeLists.txt<<EOF
+add_library(\$name
+	STATIC 
+	\$name.hpp
+	\$name.cpp
+)
+EOF
+done
+EOFN
+
+}
 function run_script {
 	touch $ProjectName/build/build.sh
 	cat > $ProjectName/build/build.sh<<EOF
@@ -68,3 +86,4 @@ init_src
 cmake_init
 cmake_test
 run_script
+renew_lib

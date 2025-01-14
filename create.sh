@@ -43,7 +43,7 @@ EOF
 function init_src {
 	cat > $ProjectName/src/CMakeLists.txt<<EOF
 	add_executable($ProjectName main.cpp)
-	include_directoiries(../include)
+	include_directories(../include)
 EOF
 
 touch $ProjectName/src/main.cpp
@@ -79,7 +79,7 @@ function run_script {
 	cat > $ProjectName/build/build.sh<<EOF
 	cmake ..
 	cmake --build .
-	./src/$ProjectName "$*"
+	./src/$ProjectName \$*
 EOF
 }
 init

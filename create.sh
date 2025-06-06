@@ -43,7 +43,7 @@ EOF
 function init_src {
 	cat > $ProjectName/src/CMakeLists.txt<<EOF
 	add_executable($ProjectName main.cpp)
-	include_directories(../include)
+	include_directories(${CMAKE_SOURCE_DIR}/include)
 EOF
 
 touch $ProjectName/src/main.cpp
@@ -56,24 +56,6 @@ cat > $ProjectName/src/main.cpp<<EOF
 	}
 EOF
 }
-function renew_lib {
-	touch $ProjectName/lib/renew.sh
-	cat > $ProjectName/lib/renew.sh<<EOFN
-file=\$(find . -name '*.cpp' -print)
-for item in \$file
-do
-	name=\$(echo \$item|sed 's/.\///g'|sed 's/.cpp//g')
-	cat>CMakeLists.txt<<EOF
-add_library(\$name
-	STATIC 
-	\$name.hpp
-	\$name.cpp
-)
-EOF
-done
-EOFN
-
-}
 function run_script {
 	touch $ProjectName/build/build.sh
 	cat > $ProjectName/build/build.sh<<EOF
@@ -82,9 +64,23 @@ function run_script {
 	./src/$ProjectName \$*
 EOF
 }
+function init_lib{
+	cat > $ProjectName/lib/CMakeLists.txt<<EOF
+# lib/CMakeLists.txt
+
+file(GLOB_RECURSE LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE LIB_HEADERS "${CMAKE_SOURCE_DIR}/include/*.hpp")
+
+add_library(${ProjectName}lib STATIC ${LIB_SOURCES} ${LIB_HEADERS})
+
+target_include_directories(${ProjectName}lib PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+EOF
+}
 init
 init_src
 cmake_init
 cmake_test
 run_script
-renew_lib
+init_lib
